@@ -1,0 +1,9 @@
+body { min-height: 100vh; }
+.card { border-radius: 1rem; }
+.stat-card {
+  background: #fff; border: 1px solid #e9ecef; border-radius: 1rem;
+  padding: 1rem 1.1rem; box-shadow: 0 .125rem .25rem rgba(0,0,0,.04);
+}
+.stat-card span { display:block; color:#6c757d; font-size:.9rem; }
+.stat-card strong { display:block; font-size:1.7rem; margin-top:.2rem; }
+.table > :not(caption) > * > * { padding: .85rem .65rem; }

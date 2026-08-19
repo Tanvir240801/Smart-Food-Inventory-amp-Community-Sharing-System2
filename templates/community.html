@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}Community Sharing — FoodShare{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+<div><h1 class="h2 mb-1">Community Sharing</h1><p class="text-secondary mb-0">Surplus food that is still within its expiry date.</p></div>
+</div>
+<div class="row g-3">
+{% for s in shares %}
+<div class="col-md-6 col-lg-4">
+<div class="card h-100 border-0 shadow-sm">
+<div class="card-body">
+<span class="badge text-bg-success mb-2">Available</span>
+<h2 class="h5">{{ s.name }}</h2>
+<p class="mb-1">{{ s.quantity }} {{ s.unit }}</p>
+<p class="small text-secondary">Expires {{ s.expiry_date }} • {{ s.location or 'Location not specified' }}</p>
+<p class="small">{{ s.notes or 'No additional notes.' }}</p>
+<p class="small text-secondary">Shared by {{ s.owner_name }}</p>
+<form method="post" action="{{ url_for('claim_share', share_id=s.id) }}">
+<input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button class="btn btn-dark w-100">Claim</button>
+</form>
+</div></div></div>
+{% else %}
+<div class="col-12"><div class="alert alert-secondary">No available food listings.</div></div>
+{% endfor %}
+</div>
+{% endblock %}

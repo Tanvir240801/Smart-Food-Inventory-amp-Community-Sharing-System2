@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}FoodShare — Reduce Food Waste{% endblock %}
+{% block content %}
+<div class="p-5 mb-4 bg-white rounded-4 border shadow-sm">
+  <div class="col-lg-8">
+    <span class="badge text-bg-success mb-3">Food waste reduction</span>
+    <h1 class="display-5 fw-bold">Track food before it expires. Share surplus before it spoils.</h1>
+    <p class="lead text-secondary">A database-driven web application for household and small-kitchen inventory management with community sharing.</p>
+    <a href="{{ url_for('register') }}" class="btn btn-dark btn-lg">Start managing food</a>
+  </div>
+</div>
+<h2 class="h4 mb-3">Available community food</h2>
+<div class="row g-3">
+{% for item in shared %}
+  <div class="col-md-4">
+    <div class="card h-100 border-0 shadow-sm">
+      <div class="card-body">
+        <h3 class="h5">{{ item.name }}</h3>
+        <p class="mb-1">{{ item.quantity }} {{ item.unit }} • {{ item.location or 'Location not specified' }}</p>
+        <p class="small text-secondary mb-0">Expires {{ item.expiry_date }} • Shared by {{ item.owner_name }}</p>
+      </div>
+    </div>
+  </div>
+{% else %}
+  <p class="text-secondary">No active sharing listings yet.</p>
+{% endfor %}
+</div>
+{% endblock %}

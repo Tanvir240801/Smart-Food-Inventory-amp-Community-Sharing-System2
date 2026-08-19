@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block title %}Dashboard — FoodShare{% endblock %}
+{% block content %}
+<div class="d-flex flex-wrap justify-content-between align-items-center mb-4">
+  <div><h1 class="h2 mb-1">My Food Inventory</h1><p class="text-secondary mb-0">Expiry status is calculated from today's date.</p></div>
+  <a class="btn btn-dark" href="{{ url_for('add_item') }}">+ Add food</a>
+</div>
+<div class="row g-3 mb-4">
+  <div class="col-6 col-lg-3"><div class="stat-card"><span>Total</span><strong>{{ stats.total or 0 }}</strong></div></div>
+  <div class="col-6 col-lg-3"><div class="stat-card"><span>Active</span><strong>{{ stats.active or 0 }}</strong></div></div>
+  <div class="col-6 col-lg-3"><div class="stat-card"><span>Urgent</span><strong>{{ stats.urgent or 0 }}</strong></div></div>
+  <div class="col-6 col-lg-3"><div class="stat-card"><span>Expired</span><strong>{{ stats.expired or 0 }}</strong></div></div>
+</div>
+<div class="card border-0 shadow-sm mb-4">
+<div class="card-body">
+<h2 class="h5">Inventory</h2>
+<div class="table-responsive">
+<table class="table align-middle">
+<thead><tr><th>Food</th><th>Qty</th><th>Expiry</th><th>Status</th><th>Actions</th></tr></thead>
+<tbody>
+{% for item in items %}
+<tr>
+<td><strong>{{ item.name }}</strong><br><span class="small text-secondary">{{ item.category or 'Uncategorized' }}</span></td>
+<td>{{ item.quantity }} {{ item.unit }}</td>
+<td>{{ item.expiry_date }}</td>
+<td>
+{% if item.expiry_status == 'Expired' %}<span class="badge text-bg-danger">Expired</span>
+{% elif item.expiry_status == 'Urgent' %}<span class="badge text-bg-warning">Urgent{% if item.days_left is not none %} ({{ item.days_left }}d){% endif %}</span>
+{% elif item.expiry_status == 'Soon' %}<span class="badge text-bg-info">Soon</span>
+{% else %}<span class="badge text-bg-success">Fresh</span>{% endif %}
+</td>
+<td class="text-nowrap">
+<a class="btn btn-sm btn-outline-secondary" href="{{ url_for('edit_item', item_id=item.id) }}">Edit</a>
+<form class="d-inline" method="post" action="{{ url_for('delete_item', item_id=item.id) }}" onsubmit="return confirm('Delete this item?');">
+<input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button class="btn btn-sm btn-outline-danger">Delete</button>
+</form>
+<form class="d-inline" method="post" action="{{ url_for('create_share', item_id=item.id) }}">
+<input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button class="btn btn-sm btn-success">Share</button>
+</form>
+</td>
+</tr>
+{% else %}<tr><td colspan="5" class="text-center text-secondary py-4">No food items yet.</td></tr>{% endfor %}
+</tbody>
+</table>
+</div>
+</div></div>
+<div class="card border-0 shadow-sm">
+<div class="card-body">
+<div class="d-flex justify-content-between"><h2 class="h5">My sharing listings</h2><a href="{{ url_for('community') }}" class="small">Browse community</a></div>
+<div class="table-responsive">
+<table class="table"><thead><tr><th>Food</th><th>Expiry</th><th>Status</th><th></th></tr></thead>
+<tbody>
+{% for s in shares %}
+<tr><td>{{ s.name }}</td><td>{{ s.expiry_date }}</td><td>{{ s.status|capitalize }}</td><td>{% if s.status == 'available' %}<form method="post" action="{{ url_for('cancel_share', share_id=s.id) }}"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button class="btn btn-sm btn-outline-secondary">Cancel</button></form>{% endif %}</td></tr>
+{% else %}<tr><td colspan="4" class="text-secondary">No sharing listings.</td></tr>{% endfor %}
+</tbody></table>
+</div>
+</div></div>
+{% endblock %}
